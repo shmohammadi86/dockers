@@ -1,4 +1,4 @@
-FROM buntu:20.04
+FROM ubuntu:20.04
 
 LABEL name="r-base" \
       maintainer="shahin.mohammadi@gmail.com" \
