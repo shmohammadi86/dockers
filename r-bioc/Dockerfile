@@ -1,5 +1,4 @@
-ARG PARENT_IMAGE
-FROM "$PARENT_IMAGE"
+FROM r-base
 
 ARG BIOCONDUCTOR_DOCKER_VERSION=3.12.25
 
@@ -150,7 +149,7 @@ RUN cd /tmp \
 RUN echo "R_LIBS=/usr/local/lib/R/host-site-library:\${R_LIBS}" > /usr/local/lib/R/etc/Renviron.site \
 	&& echo "options(defaultPackages=c(getOption('defaultPackages'),'BiocManager'))" >> /usr/local/lib/R/etc/Rprofile.site
 
-ADD install.R /tmp/
+ADD scripts/install.R /tmp/
 RUN R -f /tmp/install.R
 
 # DEVEL: Add sys env variables to DEVEL image
