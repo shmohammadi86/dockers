@@ -1,5 +1,4 @@
-ENV PARENT_IMAGE
-FROM "$PARENT_IMAGE"
+FROM buntu:20.04
 
 LABEL name="r-base" \
       maintainer="shahin.mohammadi@gmail.com" \
