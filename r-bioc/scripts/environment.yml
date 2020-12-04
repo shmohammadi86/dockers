@@ -1,0 +1,22 @@
+name: base
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - numpy
+  - matplotlib
+  - scipy
+  - scikit-learn
+  - pandas
+  - pyyaml
+  - cwltool
+  - plotly
+  - kb-python
+  - cellxgene
+  - anndata
+  - scanpy
+  - pip
+  - pip:
+    - scrublet
+    - solo-sc
