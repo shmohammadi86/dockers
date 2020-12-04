@@ -4,7 +4,7 @@ PARENT_IMAGE=r-bioc
 all: build
 
 build:
-	docker build -t $(IMAGE) --build-arg PARENT_IMAGE=$(PARENT_IMAGE) --no-cache .
+	docker build -t $(IMAGE) .
 
 test:
 	docker run --rm -it $(IMAGE) bash

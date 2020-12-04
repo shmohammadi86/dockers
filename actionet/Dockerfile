@@ -1,5 +1,4 @@
-ARG PARENT_IMAGE
-FROM "$PARENT_IMAGE"
+FROM shmohammadi86/r-bioc
 
 LABEL name="actionet" \
       description="ACTIONet single-cell analysis framework"
@@ -7,7 +6,7 @@ LABEL name="actionet" \
 ENV DEBIAN_FRONTEND noninteractive
 
 # Install R packages
-ADD install.R /tmp/
+ADD scripts/install.R /tmp/
 RUN R -f /tmp/install.R
 
 ## Install nextflow
