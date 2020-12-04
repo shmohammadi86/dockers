@@ -127,8 +127,13 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-RUN conda update -n base conda && \
-	conda env update -f /tmp/environment.yml
+RUN /opt/conda/bin/conda update -n base -c defaults conda && \
+    /opt/conda/bin/conda install python=3.6 && \
+    /opt/conda/bin/conda install anaconda-client && \
+    /opt/conda/bin/conda install jupyter -y && \
+    /opt/conda/bin/conda install numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly cwltool -y && \
+    /opt/conda/bin/conda upgrade dask && \
+    pip install solo-sc scrublet kb-python cellxgene anndata scanpy scvi-tools
 
 
 # Install libsbml and xvfb
