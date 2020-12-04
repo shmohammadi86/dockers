@@ -131,8 +131,7 @@ RUN /opt/conda/bin/conda update -n base -c defaults conda && \
     /opt/conda/bin/conda install python=3.6 && \
     /opt/conda/bin/conda install anaconda-client && \
     /opt/conda/bin/conda install jupyter -y && \
-    /opt/conda/bin/conda install numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly -y && \
-    /opt/conda/bin/conda upgrade dask && \
+    /opt/conda/bin/conda install dask numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly -y && \
     pip install solo-sc scrublet kb-python cellxgene anndata scanpy scvi-tools cwltool
 
 
