@@ -1,6 +1,7 @@
 name: base
 channels:
   - conda-forge
+  - pytorch
   - bioconda
   - defaults
 dependencies:
@@ -16,6 +17,7 @@ dependencies:
   - cellxgene
   - anndata
   - scanpy
+  - scvi-tools
   - pip
   - pip:
     - scrublet
