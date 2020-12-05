@@ -100,8 +100,12 @@ RUN apt-get update \
 	openjdk-8-jre-headless \
 	openssh-client \
 	cmake \
+	gcc-7 \
+	g++-7 \ 
+	gfortran-7 \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
+
 
 ## These two libraries don't install in the above section--WHY?
 RUN apt-get update \
@@ -165,6 +169,7 @@ ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
 
 
 RUN R -f /tmp/install_bioc.R
+
 RUN R -f /tmp/install_sc.R
 
 
