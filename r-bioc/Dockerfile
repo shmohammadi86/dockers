@@ -167,8 +167,9 @@ ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
 
 
 ADD scripts/* /tmp/
-RUN R -f /tmp/install_bioc.R
-RUN R -f /tmp/install_sc.R
+RUN R -f /tmp/install_igraph.R
+# RUN R -f /tmp/install_bioc.R
+# RUN R -f /tmp/install_sc.R
 
 
 ## Install nextflow
