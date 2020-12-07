@@ -118,25 +118,6 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-ENV PATH /opt/conda/bin:$PATH
-
-## Install Miniconda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
-
-RUN /opt/conda/bin/conda update -n base -c defaults conda && \
-    /opt/conda/bin/conda install python=3.6 && \
-    /opt/conda/bin/conda install anaconda-client && \
-    /opt/conda/bin/conda install jupyter -y && \
-    /opt/conda/bin/conda install dask numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly -y && \
-    pip install solo-sc scrublet kb-python cellxgene anndata scanpy scvi-tools cwltool
-
-
 # Install libsbml and xvfb
 RUN cd /tmp \
 	## libsbml
@@ -167,9 +148,9 @@ ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
 
 
 ADD scripts/* /tmp/
-RUN R -f /tmp/install_igraph.R
-# RUN R -f /tmp/install_bioc.R
-# RUN R -f /tmp/install_sc.R
+# RUN R -f /tmp/install_igraph.R
+RUN R -f /tmp/install_bioc.R
+RUN R -f /tmp/install_sc.R
 
 
 ## Install nextflow
@@ -179,6 +160,24 @@ RUN cd /tmp && export NXF_VER=19.07.0 && curl https://get.nextflow.io | bash && 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
   unzip awscliv2.zip && \
   sudo ./aws/install
+
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PATH /opt/conda/bin:$PATH
+
+## Install Miniconda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+
+RUN /opt/conda/bin/conda update -n base -c defaults conda && \
+    /opt/conda/bin/conda install python=3.6 && \
+    /opt/conda/bin/conda install anaconda-client && \
+    /opt/conda/bin/conda install jupyter -y && \
+    /opt/conda/bin/conda install dask numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly -y && \
+    pip install solo-sc scrublet kb-python cellxgene anndata scanpy scvi-tools cwltool
 
 
 # cellxgene port
