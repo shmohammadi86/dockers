@@ -118,8 +118,6 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 
-ADD scripts/* /tmp/
-
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
@@ -168,8 +166,9 @@ RUN curl -O http://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc
 ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
 
 
-# RUN R -f /tmp/install_bioc.R
-# RUN R -f /tmp/install_sc.R
+ADD scripts/* /tmp/
+RUN R -f /tmp/install_bioc.R
+RUN R -f /tmp/install_sc.R
 
 
 ## Install nextflow
