@@ -115,7 +115,7 @@ echo  'options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(),
                        R.version$arch, R.version$os)))' >> ${R_HOME}/etc/Rprofile.site
 
 ## Add parallel make option
-mkdir ~/.R/ && echo "MAKEFLAGS+=-j `nproc`" >> ~/.R/Makevars
+# mkdir ~/.R/ && echo "MAKEFLAGS+=-j \`nproc\`" >> ~/.R/Makevars
 
 ## Add a library directory (for user-installed packages)
 mkdir -p ${R_HOME}/site-library
