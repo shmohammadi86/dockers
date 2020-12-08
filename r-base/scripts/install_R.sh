@@ -65,6 +65,10 @@ BUILDDEPS="curl \
     xfonts-base \
     xvfb \
     wget \
+    libreadline-dev \
+    xorg-dev \
+    curl \
+    libcurl4-openssl-dev \
     zlib1g-dev"
 
 apt-get install -y --no-install-recommends $BUILDDEPS
@@ -82,29 +86,30 @@ R_PAPERSIZE=letter \
     R_PRINTCMD=/usr/bin/lpr \
     LIBnn=lib \
     AWK=/usr/bin/awk \
-    MKL="-Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_gf_lp64.a ${MKLROOT}/lib/intel64/libmkl_gnu_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -lgomp -lpthread -lm -ldl" \
-	&& ./configure --with-blas="$MKL" \
-		  --with-lapack \
-		  --enable-R-shlib \
-		  --with-x=yes \
-		  --enable-memory-profiling \
-		  --enable-threads \
-		  --enable-openmp \
-		  --with-libpng \
-		  --with-readline \
-		  --with-ICU \
-		  --with-tcltk \
-		  --with-recommended-packages \
-		  --disable-nls \
-		  --disable-java \
-		  R_SHELL=/bin/bash \
-		'FFLAGS=-m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
-		'CFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
-		'CPPFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
-		'CXXFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
-		&& make -j $(shell nproc) \
-		&& make install \
-    		&& make clean
+    MKL="-Wl,--start-group /usr/lib/x86_64-linux-gnu/libmkl_gf_lp64.a /usr/lib/x86_64-linux-gnu/libmkl_gnu_thread.a /usr/lib/x86_64-linux-gnu/libmkl_core.a -Wl,--end-group -lgomp -lpthread -lm -ldl"
+    
+./configure --with-blas="$MKL" \
+	  --with-lapack \
+	  --enable-R-shlib \
+	  --with-x=yes \
+	  --enable-memory-profiling \
+	  --enable-threads \
+	  --enable-openmp \
+	  --with-libpng \
+	  --with-readline \
+	  --with-ICU \
+	  --with-tcltk \
+	  --with-recommended-packages \
+	  --disable-nls \
+	  --disable-java \
+	  R_SHELL=/bin/bash \
+	'FFLAGS=-m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
+	'CFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
+	'CPPFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
+	'CXXFLAGS=-DU_STATIC_IMPLEMENTATION -m64 -I/usr/include/mkl -O3 -march=native -mtune=native  -fopenmp -w' \
+	&& make -j $(shell nproc) \
+	&& make install \
+	&& make clean
 
 ## Add a default CRAN mirror
 echo "options(repos = c(CRAN = '${CRAN}'), download.file.method = 'libcurl')" >> ${R_HOME}/etc/Rprofile.site
