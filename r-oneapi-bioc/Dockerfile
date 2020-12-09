@@ -1,4 +1,4 @@
-FROM r-oneapi
+FROM r-oneapi:4.0.3
 
 ARG BIOCONDUCTOR_DOCKER_VERSION=3.12.28
 
