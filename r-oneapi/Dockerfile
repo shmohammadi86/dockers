@@ -1,4 +1,4 @@
-FROM oneapi:20.04
+FROM shmohammadi86/oneapi
 
 LABEL name="r-base" \
       maintainer="shahin.mohammadi@gmail.com" \
