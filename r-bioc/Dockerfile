@@ -2,27 +2,18 @@ FROM nuest/mro:4.0.2-rstudio
 
 ARG BIOCONDUCTOR_DOCKER_VERSION=3.12.28
 
-LABEL name="bioconductor/bioconductor_docker" \
-      version=$BIOCONDUCTOR_DOCKER_VERSION \
-      url="https://github.com/Bioconductor/bioconductor_docker" \
-      vendor="Bioconductor Project" \
-      maintainer="maintainer@bioconductor.org" \
-      description="Bioconductor docker image with system dependencies to install most packages." \
-      license="Artistic-2.0"
+LABEL name="r-bioc" \
+      maintainer="shahin.mohammadi@gmai.com" \
+      description="MRAN-based bioc docker."
 
-# nuke cache dirs before installing pkgs; tip from Dirk E fixes broken img
-RUN rm -f /var/lib/dpkg/available && rm -rf  /var/cache/apt/*
 
-# issues with '/var/lib/dpkg/available' not found
-# this will recreate
-RUN dpkg --clear-avail
-
-# This is to avoid the error
-# 'debconf: unable to initialize frontend: Dialog'
 ENV DEBIAN_FRONTEND noninteractive
+ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
 
 # Update apt-get
-RUN apt-get update \
+RUN rm -f /var/lib/dpkg/available && rm -rf  /var/cache/apt/* && \
+	dpkg --clear-avail && \
+	apt-get update \
 	&& apt-get install -y --no-install-recommends apt-utils \
 	&& apt-get install -y --no-install-recommends \
 	## Basic deps
@@ -108,30 +99,6 @@ RUN apt-get update \
 	xfonts-100dpi \
 	xfonts-75dpi \
 	biber \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
-
-## Python installations
-RUN apt-get update \
-	&& apt-get install -y software-properties-common \
-	&& add-apt-repository universe \
-	&& apt-get update \
-	&& apt-get -y --no-install-recommends install python2 python-dev \
-	&& curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py \
-	&& python2 get-pip.py \
-	&& pip2 install wheel \
-	## Install sklearn and pandas on python
-	&& pip2 install sklearn \
-	pandas \
-	pyyaml \
-	cwltool \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& rm -rf get-pip.py
-
-## FIXME
-## These two libraries don't install in the above section--WHY?
-RUN apt-get update \
 	&& apt-get -y --no-install-recommends install \
 	libmariadb-dev-compat \
 	libjpeg-dev \
@@ -147,7 +114,7 @@ RUN cd /tmp \
 	&& tar zxf libSBML-5.10.2-core-src.tar.gz \
 	&& cd libsbml-5.10.2 \
 	&& ./configure --enable-layout \
-	&& make \
+	&& make -j `nproc`\
 	&& make install \
 	## Clean libsbml, and tar.gz files
 	&& rm -rf /tmp/libsbml-5.10.2 \
@@ -156,31 +123,32 @@ RUN cd /tmp \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN echo "R_LIBS=/usr/local/lib/R/host-site-library:\${R_LIBS}" > /usr/local/lib/R/etc/Renviron.site \
-	&& echo "options(defaultPackages=c(getOption('defaultPackages'),'BiocManager'))" >> /usr/local/lib/R/etc/Rprofile.site
-
-ADD scripts/install_bioc.R /tmp/
-
 
 RUN mkdir ~/.R/ && echo "MAKEFLAGS+=-j \`nproc\`" >> ~/.R/Makevars && \
-	echo "CURL_CA_BUNDLE=/opt/microsoft/ropen/$MRO_VERSION//lib64/R/lib/microsoft-r-cacert.pem" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Renviron
-
-RUN cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site && head -n -7 /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site > /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site && sed -i 's/quiet <- /quiet <- TRUE #/' /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site && cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && echo "options("download.file.method" = \"libcurl\")" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site
-
+	cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site && \
+	head -n -7 /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site > /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site && \
+	sed -i 's/quiet <- /quiet <- TRUE #/' /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site && \
+	cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_new.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && \
+	echo "options("download.file.method" = \"libcurl\")" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && \
+	echo "options(defaultPackages=c(getOption('defaultPackages'),'BiocManager'))" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && \
+	echo "R_LIBS=/usr/local/lib/R/host-site-library:\${R_LIBS}" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Renviron.site
+	
 ADD scripts/* /tmp/
 RUN R -f /tmp/install_bioc.R
+RUN R -f /tmp/update_packages.R
 
-RUN cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && rm /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site
-
+RUN cp /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site && rm /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile_old.site \
+	&& echo "options(defaultPackages=c(getOption('defaultPackages'),'BiocManager'))" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site \
+	&& echo "Sys.setenv(CURL_CA_BUNDLE = file.path(Sys.getenv('R_HOME'), 'lib/microsoft-r-cacert.pem'))" >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Rprofile.site
 
 # DEVEL: Add sys env variables to DEVEL image
 RUN curl -O http://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc \
-	&& cat Renviron.bioc | grep -o '^[^#]*' | sed 's/export //g' >>/etc/environment \
-	&& cat Renviron.bioc >> /usr/local/lib/R/etc/Renviron.site \
-	&& echo BIOCONDUCTOR_DOCKER_VERSION=${BIOCONDUCTOR_DOCKER_VERSION} >> /usr/local/lib/R/etc/Renviron.site \
+	&& cat Renviron.bioc | grep -o '^[^#]*' | sed 's/export //g' >> /etc/environment \
+	&& cat Renviron.bioc >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Renviron.site \
+	&& echo BIOCONDUCTOR_DOCKER_VERSION=${BIOCONDUCTOR_DOCKER_VERSION} >> /opt/microsoft/ropen/$MRO_VERSION/lib64/R/etc/Renviron.site \
 	&& rm -rf Renviron.bioc
-
-ENV BIOCONDUCTOR_DOCKER_VERSION=$BIOCONDUCTOR_DOCKER_VERSION
-
+	
+  
+  
 # Init command for s6-overlay
 CMD ["/init"]
