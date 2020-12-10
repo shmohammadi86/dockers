@@ -1,4 +1,4 @@
-FROM r-oneapi-bioc
+FROM shmohammadi86/r-oneapi-bioc
 
 LABEL name="genomics" \
       maintainer="shahin.mohammadi@gmail.com" \
