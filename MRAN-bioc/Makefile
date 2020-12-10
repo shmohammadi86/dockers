@@ -1,6 +1,6 @@
-IMAGE=bioc
+IMAGE=MRAN-bioc
 REGISTRY=shmohammadi86
-VERSION=3.12.28
+VERSION=3.12
 
 all: build
 
