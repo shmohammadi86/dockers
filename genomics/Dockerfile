@@ -8,11 +8,11 @@ LABEL name="genomics" \
 ADD scripts/* /tmp/
 RUN R -f /tmp/install_sc.R
 
-RUN /opt/conda/bin/conda update -n base -c defaults conda && \
-    /opt/conda/bin/conda install python=3.6 && \
-    /opt/conda/bin/conda install anaconda-client && \
-    /opt/conda/bin/conda install jupyter -y && \
-    /opt/conda/bin/conda install dask numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly cython -y && \
+RUN conda update -n base -c defaults conda && \
+    conda install python=3.6 && \
+    conda install anaconda-client && \
+    conda install jupyter -y && \
+    conda install dask numpy pandas scikit-learn matplotlib seaborn pyyaml scikit-learn h5py keras plotly cython -y && \
     pip install solo-sc scrublet kb-python cellxgene anndata scanpy scvi-tools scanorama bbknn wot
 
 
