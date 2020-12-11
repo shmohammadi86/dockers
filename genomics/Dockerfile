@@ -5,13 +5,11 @@ LABEL name="genomics" \
       description="Docker image with R/Python packages for genomics (+single-cell) analysis."
 
 
-ADD scripts/* /tmp/
+ADD scripts/install_sc.R /tmp/
 RUN R -f /tmp/install_sc.R
 
-RUN echo 'channels:
-  - intel
-  - defaults' > /opt/intel/oneapi/intelpython/latest/.condarc
-  
+
+ADD scripts/condarc /opt/intel/oneapi/intelpython/latest/.condarc
 RUN conda update conda && \
     conda install python=3.6 && \
     conda install anaconda-client && \
