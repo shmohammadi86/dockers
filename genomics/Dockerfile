@@ -8,7 +8,11 @@ LABEL name="genomics" \
 ADD scripts/* /tmp/
 RUN R -f /tmp/install_sc.R
 
-RUN conda update -n base -c defaults conda && \
+RUN echo 'channels:
+  - intel
+  - defaults' > /opt/intel/oneapi/intelpython/latest/.condarc
+  
+RUN conda update conda && \
     conda install python=3.6 && \
     conda install anaconda-client && \
     conda install jupyter -y && \
