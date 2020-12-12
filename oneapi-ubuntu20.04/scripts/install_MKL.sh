@@ -19,6 +19,5 @@ apt-get update -y && \
 		intel-oneapi-common-vars \
 		intel-oneapi-mkl-devel \
 		intel-oneapi-python \
-		intel-oneapi-tbb-devel \
 		--
 		
